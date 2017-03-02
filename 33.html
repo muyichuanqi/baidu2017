@@ -11,7 +11,7 @@
     		font-style: normal;
     		font-family: "微软雅黑";
     	}
-	    #main {
+	    #main,.jieshao {
 			margin: 0 auto;
 			width: 600px;
 			position: relative;
@@ -45,10 +45,21 @@
 			height: 80%;
 			background: red;
 		}
+		.jieshao {
+			margin-top: 20px;
+		}
     </style>
   </head>
 <body>
-	<div id="main"></div>
+	<div id="main">
+		
+	</div>
+	<div class="jieshao">
+		go: 朝所在方向前进一格&nbsp;&nbsp;&nbsp;
+		tun lef: 逆时针旋转90度&nbsp;&nbsp;&nbsp;
+		tun rig: 顺时针旋转90度&nbsp;&nbsp;&nbsp;
+		tun bac: 旋转180度&nbsp;&nbsp;&nbsp;
+	</div>
 	<script>
 		function $(id){
 			return document.getElementById(id);
@@ -83,12 +94,11 @@
 				div.innerHTML = html.replace("{trtd}",content);
 
 				$("main").appendChild(div);
-			};
-			pingmu.prototype.inp = function(){
+
 				var inputDiv = document.createElement("div");
 				inputDiv.innerHTML = '<input id="oder" type="text"/><input id="button" type="button" value="提交"/>';
 				$("main").appendChild(inputDiv);
-			}
+			};
 
 
 			//方块自身
@@ -123,7 +133,7 @@
 						}
 					}
 				}
-
+				//方向系统
 				var fx = function(oder){//
 					switch(oder){
 						case 'tun lef':
@@ -158,8 +168,8 @@
 						}
 					}
 				}
-
-				var oderCenter = function(msg){//处理接受任务，分配任务
+				//CPU 处理接受任务，分配任务
+				var oderCenter = function(msg){
 					if(msg=="go"){
 						switch(config.fx){
 							case 1://上
@@ -192,31 +202,27 @@
 					}
 					
 				}
-
-				var message = function(msg){//只管接受
-					//go 命令
-					//旋转
-					var msg = msg.toLowerCase();//转化成小写
+				//信息系统
+				var message = function(msg){
 					if(!msg){
 						alert("命令不能为空")
 						return false;
 					}
+					var msg = msg.toLowerCase();//转化成小写
+					
 					oderCenter(msg);
 				}
 
-
 				return {
-					message :message
+					message :message//外部调用接口,信息接口
 				}
 
 			}()
 
 			function init(){
 				var p = new pingmu(10);
-				//生成表格背景
+				//生成表格背景及表单
 				p.c();
-				//生成表单
-				p.inp();
 				//信息接收
 				;+function(){
 					$("button").addEventListener('click',function(){
