@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>百度学院33</title>
+    <style>
+    	*{
+    		margin: 0;
+    		padding: 0;
+    		list-style: none;
+    		font-style: normal;
+    		font-family: "微软雅黑";
+    	}
+	    #main {
+			margin: 0 auto;
+			width: 600px;
+			position: relative;
+	    }
+	    #table_content {
+	    	border-collapse:collapse;
+	    }
+		#table_content tr td{
+			border:1px #ddd solid;
+			width: 50px;
+			height: 50px;
+			text-align: center;
+			vertical-align: middle;
+			padding: 0;
+			margin: 0;
+			-webkit-box-sizing: border-box;
+		    -moz-box-sizing: border-box;
+		    box-sizing: border-box;
+		}
+		#fk {
+			position: absolute;
+			width: 50px;
+			height: 50px;
+			transform:rotate(0deg);
+		}
+		#fk .blue {
+			height: 20%;
+			background: blue;
+		}
+		#fk .red {
+			height: 80%;
+			background: red;
+		}
+    </style>
+  </head>
+<body>
+	<div id="main"></div>
+	<script>
+		function $(id){
+			return document.getElementById(id);
+		}
+		;(function(){
+			//实现页面布局
+			function pingmu(num){
+				this.num = parseInt(num);//记录要创建x*x的表格
+			}
+			pingmu.prototype.c = function() {
+				var html = '<table id="table_content" border="1" cellspacing="0" cellpadding="0">{trtd}</table>';
+				var td = '';
+				var tr = '<tr>{td}</tr>';
+				var content = '';
+				for(var i=0;i<=this.num;i++){
+					for(var j=0;j<=this.num;j++){
+						if(i==0){
+							td+='<td>'+j+'</td>';
+						}else{
+							if(j==0){
+							td='<td>'+i+'</td>';
+							}else{
+								td+='<td></td>';
+							}
+						}
+					}
+					content+=tr.replace('{td}',td);
+					td = '';
+				}
+				var div = document.createElement("div");
+				div.id = "screen";
+				div.innerHTML = html.replace("{trtd}",content);
+
+				$("main").appendChild(div);
+			};
+			pingmu.prototype.inp = function(){
+				var inputDiv = document.createElement("div");
+				inputDiv.innerHTML = '<input id="oder" type="text"/><input id="button" type="button" value="提交"/>';
+				$("main").appendChild(inputDiv);
+			}
+
+
+			//方块自身
+			var xiaofk = function(){
+				var config = {
+					maxNum:500,
+					minNum:50,
+					fx:1,//1 上 2 右 3 下 4 左
+					deg:0
+				};
+				//小方块的默认操作
+				var i =1;
+				;+function(config){
+					var fldiv = document.createElement("div");
+					fldiv.id = "fk";
+					fldiv.style.top = config.minNum + 'px';
+					fldiv.style.left = config.minNum + 'px';
+					fldiv.innerHTML = '<div class="blue"></div><div class="red"></div>';
+					$("main").appendChild(fldiv);
+				}(config);
+				//方块的运动系统
+				var movie = function(left,top,deg){
+					if(deg!=null){
+						$("fk").style.transform = 'rotate('+deg+'deg)';
+					}else{
+						if(config.minNum<=left&&left<=config.maxNum&&config.minNum<=top&&top<=config.maxNum){
+							$("fk").style.left = left + "px";
+							$("fk").style.top = top + "px";
+						}else{
+							alert("超出范围了");
+							return false;
+						}
+					}
+				}
+
+				var fx = function(oder){//
+					switch(oder){
+						case 'tun lef':
+							config.deg+= -90;
+							movie(null,null,config.deg);
+							jiaodu(config.deg)
+							break;
+						case 'tun rig':
+							config.deg += 90;
+							movie(null,null,config.deg);
+							jiaodu(config.deg)
+							break;
+						case 'tun bac':
+							config.deg += 180;
+							movie(null,null,config.deg);
+							jiaodu(config.deg)
+							break;
+						default:
+							alert("命令不能识别");
+					}
+
+					function jiaodu(deg){
+						var deg = deg%360;
+						if(deg==0){
+							config.fx = 1;//上
+						}else if(deg==90||deg==-270){
+							config.fx = 2;//右
+						}else if(deg==180||deg==-180) {
+							config.fx = 3;//下
+						}else{
+							config.fx = 4;//左
+						}
+					}
+				}
+
+				var oderCenter = function(msg){//处理接受任务，分配任务
+					if(msg=="go"){
+						switch(config.fx){
+							case 1://上
+								var top = parseInt($("fk").style.top);
+								var left = parseInt($("fk").style.left);
+								top = top-config.minNum;
+								movie(left,top,null);
+								break;
+							case 2://右
+								var top = parseInt($("fk").style.top);
+								var left = parseInt($("fk").style.left);
+								left = left+config.minNum;
+								movie(left,top,null);
+								break;
+							case 3://下
+								var top = parseInt($("fk").style.top);
+								var left = parseInt($("fk").style.left);
+								top = top+config.minNum;
+								movie(left,top,null);
+								break;
+							case 4://左
+								var top = parseInt($("fk").style.top);
+								var left = parseInt($("fk").style.left);
+								left = left-config.minNum;
+								movie(left,top,null);
+								break;
+						}
+					}else{
+						fx(msg);
+					}
+					
+				}
+
+				var message = function(msg){//只管接受
+					//go 命令
+					//旋转
+					var msg = msg.toLowerCase();//转化成小写
+					if(!msg){
+						alert("命令不能为空")
+						return false;
+					}
+					oderCenter(msg);
+				}
+
+
+				return {
+					message :message
+				}
+
+			}()
+
+			function init(){
+				var p = new pingmu(10);
+				//生成表格背景
+				p.c();
+				//生成表单
+				p.inp();
+				//信息接收
+				;+function(){
+					$("button").addEventListener('click',function(){
+						var oder = $("oder").value;
+						xiaofk.message(oder);
+					})
+				}()
+			}
+			
+
+			window.onload = function(){
+				init();
+			}
+
+		})()
+	</script>
+
+</html>
